@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block body %}
+
+
+<form action="" method="GET" class="row">
+	<div class="col-sm-5">
+    	<div class="form-group">
+			{% csrf_token %}
+			<div class="input-group">
+				<input class="form-control" type="text" name="q" placeholder="search post"/>
+				<button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+			</div>
+		</div>
+	</div>	
+	
+</form>
+
+
+<div class="col-md-8">
+	{% for post in queryset_list %}
+	<!-- Blog Post -->
+		<div class="card mb-4">
+			<img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+			<div class="card-body">
+				<h2 class="card-title">{{ post.title|title }}</h2>
+				{% if post.image %}
+				<img src="{{ post.image.url }}" alt="">
+				{% endif %}
+				<!--Below is the former method using JavaSrcipt but the next one is using django-markdown-deux
+				the major difference is removing the class content-markdown added to it with jquery
+				-->
+				<!--<p class="card-text content-markdown">{{ post.get_markdown }}</p>-->
+				<div class="card-text post-detail-item">{{ post.get_markdown|truncatechars_html:120 }}</div>
+				{% if user.is_superuser %}
+				<a href="{% url 'posts:edit_post' post.slug %}" class="btn btn-primary">edit Post &rarr;</a>
+				{% endif %}
+				<a href="{% url 'posts:post_detail' post.slug %}" class="btn btn-primary">Read More &rarr;</a>
+			</div>
+			<div class="card-footer text-muted">
+				Posted on <p>{{ post.date }}</p> by
+				<a href="#">{{ post.user }}</a>
+			</div>
+			<a href="{% url 'posts:delete_post' post.id %}"><button class="btn btn-primary">Delete</button></a>
+			
+		</div>
+		
+		{% endfor %}
+
+		<div class="pagination">
+			<span class="step-links">
+			{% if posts.has_previous %}
+			<a href="?page=1">&laquo; first</a>
+			<a href="?page={{ contacts.previous_page_number }}">previous</a>
+			{% endif %}
+			<span class="current">
+			Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
+			</span>
+			{% if posts.has_next %}
+			<a href="?page={{ posts.next_page_number }}">next</a>
+			<a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
+			{% endif %}
+			</span>
+			</div>
+</div>
+
+
+
+
+
+  
+{% endblock body %}

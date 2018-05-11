@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+<div class="container">
+
+        
+    
+   
+    <form method="post" action="">
+    {% csrf_token %}
+    <p> Are yout sure you want to delete {{ object.content }} ?</p>
+    <button class="btn btn-danger">Confirm</button>
+     <a href="{{ object.get_absolute_url }}" class="btn btn-primary"> Cancel</a>
+    </form>
+   
+
+</div>
+{% endblock %}

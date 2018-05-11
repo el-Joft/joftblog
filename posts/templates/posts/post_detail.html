@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+<div class="container">
+
+        
+        
+
+   
+    <div>
+        <p> Read time : 
+        {% if instance.read_time <= 1 %} < 1 minute 
+        {% else %} > 1 minute
+        {% endif %}
+        
+        <h2>{{ instance.title }}</h2>
+    </div>
+    <div>
+        {% if instance.image %}
+        <img src="{{ instance.image.url }}" alt="">
+        {% endif %}
+        <!--<div class="content-markdown">{{ instance.body|linebreaks }}</div>-->
+        <div class="post-detail-item">{{ instance.get_markdown }}</div>
+        <!-- {{ share_string }} -->
+        <a href="https://facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri}}"> Facebook</a>
+        <a href="https://twitter.com/home?status={{ share_string }} %20 {{ request.build_absolute_uri}}"> Twiiter</a>
+    </div>
+    <div>
+        <p class="lead"> Comments </p>
+        <!--{{ instance.comments.all }}-->
+        {% for comment in comments %}
+        <blockquote>
+        
+    
+            {{ comment.content }}
+        
+            <br>
+            <small>{{ comment.timestamp|timesince }} ago | 
+            {% if comment.children.count > 0 %}
+                {{comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %}
+            {% endif %} |
+            <a class="comment-reply-btn" id="work" href="">Reply</a> | <a href="{{ comment.get_absolute_url }}">Thread</a>
+            | <a href="{{ comment.get_delete_url }}">Delete</a>
+            </small>
+            
+            {% for child_comment in comment.children %}
+            <div class="comment-reply" style="display:none;" >
+                <li>
+                {{ child_comment.content }}
+                <br>
+                <small>{{ child_comment.timestamp|timesince }} ago</small> 
+                </li>
+           
+            {% endfor %}
+
+
+                <form method="post" action="">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input type="hidden" name="parent_id" value='{{comment.id}}'/>
+                <button class="btn btn-primary">Reply</button>
+                </form>
+            </div>
+
+        </blockquote>
+            <hr>
+    
+        
+            <!--To grab the Post objects through the comment-->
+            <!--{{ comment.content_object }} it displays the Post title-->
+        {% endfor %}
+    </div>
+    <div>
+        <form method="post" action="">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn btn-primary">Comment</button>
+        </form>
+    </div>
+
+</div>
+
+
+{% endblock %}
